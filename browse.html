@@ -163,15 +163,19 @@
 </head>
 <body>
   <header class="site-header">
-    <div class="header-inner">
+    <div class="header-nav-row">
       <a href="index.html" class="brand">
         <span class="brand-mark" aria-hidden="true">✦</span>
         <span class="brand-name">SafetyTopic</span>
       </a>
-      <p class="tagline">Browse all topics</p>
       <nav style="margin-left:auto">
-        <a href="index.html" class="btn btn-ghost" style="font-size:0.82rem;padding:6px 14px;color:#fff;border-color:rgba(255,255,255,0.35)">← Back to App</a>
+        <a href="index.html" class="header-nav-link">← Back to App</a>
       </nav>
+    </div>
+    <div class="hero-row">
+      <p class="hero-eyebrow">All Topics</p>
+      <h2 class="hero-headline">Browse the <span class="hero-mark">Full Library</span></h2>
+      <p class="hero-sub" id="hero-sub">Search by keyword or scroll by category.</p>
     </div>
   </header>
 
@@ -211,6 +215,7 @@
     </p>
   </footer>
 
+  <script src="topics-data.js"></script>
   <script>
     'use strict';
 
@@ -236,21 +241,22 @@
         .replace(/'/g, '&#39;');
     }
 
-    async function init() {
+    function init() {
       const listEl     = document.getElementById('topic-list');
       const searchEl   = document.getElementById('search-input');
       const countEl    = document.getElementById('browse-count');
       const noResults  = document.getElementById('no-results');
 
-      let topics;
-      try {
-        const res = await fetch('topics.json');
-        if (!res.ok) throw new Error();
-        topics = await res.json();
-      } catch (_) {
-        listEl.innerHTML = '<p style="padding:40px;color:var(--color-text-muted)">Could not load topics.json.</p>';
+      const topics = (typeof TOPICS !== 'undefined') ? TOPICS : [];
+      if (!topics.length) {
+        listEl.innerHTML = '<p style="padding:40px;color:var(--color-text-muted)">Could not load topics. Make sure topics-data.js is present.</p>';
         return;
       }
+
+      // Update hero subtitle with real counts
+      const catCount = new Set(topics.map(t => t.category)).size;
+      const heroSub = document.getElementById('hero-sub');
+      if (heroSub) heroSub.textContent = `${topics.length} topics across ${catCount} categories — search by keyword or scroll by category.`;
 
       // Group by category (preserve order of first appearance)
       const groups = {};

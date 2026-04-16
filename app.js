@@ -19,7 +19,7 @@ let topicCard, categorySelect, newTopicBtn,
     copyTextBtn, copyLinkBtn, printBtn, toast, brandLink;
 
 // ---------- Boot ----------
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   topicCard      = document.getElementById('topic-card');
   categorySelect = document.getElementById('category-select');
   newTopicBtn    = document.getElementById('new-topic-btn');
@@ -39,15 +39,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (stored) usedTopics = JSON.parse(stored);
   } catch (_) {}
 
-  // Load topics
-  try {
-    const res = await fetch('topics.json');
-    if (!res.ok) throw new Error('Network response was not ok');
-    allTopics = await res.json();
-  } catch (err) {
-    renderError('Could not load safety topics. Make sure topics.json is in the same folder as index.html.');
+  // Load topics from inline data (topics-data.js)
+  if (typeof TOPICS === 'undefined' || !TOPICS.length) {
+    renderError('Could not load safety topics. Make sure topics-data.js is in the same folder as index.html.');
     return;
   }
+  allTopics = TOPICS;
 
   buildCategoryDropdown();
   wireEvents();
